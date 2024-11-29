@@ -5,6 +5,8 @@ import plotly.express as px
 import plotly.graph_objs as go
 import joblib
 import seaborn as sns
+import requests
+from io import BytesIO
 import matplotlib.pyplot as plt
 from sklearn.metrics import (
     roc_curve, auc, confusion_matrix, 
@@ -42,7 +44,7 @@ class BreastCancerDetectionApp:
             padding: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: transform 0.3s;
-            border: 1px solid #E0E0E0;
+            border: 1px solid #fff700;
         }
         .metric-container:hover {
             transform: scale(1.05);
@@ -56,7 +58,7 @@ class BreastCancerDetectionApp:
             margin: 20px 0;
         }
         .developer-section {
-            background-color: #F8F9F9;
+            background-color: #fff700;
             border-radius: 10px;
             padding: 20px;
             margin-top: 20px;
@@ -82,10 +84,28 @@ class BreastCancerDetectionApp:
     def load_resources(self):
         @st.cache_resource
         def load_model_data(_self):
-            model = joblib.load("C:/Users/JOSEPH/Desktop/infy final/adaboost_model_with_smote_on_original_data.pkl")
-            scaler = joblib.load("C:/Users/JOSEPH/Desktop/infy final/scaler.pkl")
-            data = joblib.load("C:/Users/JOSEPH/Desktop/infy final/data_metadata_with_smote_on_original_data.pkl")
-            feature_names = joblib.load("C:/Users/JOSEPH/Desktop/infy final/feature_names.pkl")
+            
+            # GitHub raw file base URL
+            base_url = "https://raw.githubusercontent.com/josephboban2000/AIML_JOSEPH_INFY/main/"
+            # Full URLs for each pickle file
+            model_url = base_url + "adaboost_model_with_smote_on_original_data.pkl"
+            scaler_url = base_url + "scaler.pkl"
+            data_url = base_url + "data_metadata_with_smote_on_original_data.pkl"
+            feature_names_url = base_url + "feature_names.pkl"
+    
+            # Helper function to load a pickle file from a URL
+            def load_pickle_from_url(url):
+                
+                response = requests.get(url)
+                response.raise_for_status()  # Ensure the request was successful
+                return joblib.load(BytesIO(response.content))  # Load from in-memory bytes
+    
+            # Load all files
+            model = load_pickle_from_url(model_url)
+            scaler = load_pickle_from_url(scaler_url)
+            data = load_pickle_from_url(data_url)
+            feature_names = load_pickle_from_url(feature_names_url)
+    
             return model, scaler, data, feature_names
 
         self.model, self.scaler, self.data, self.feature_names = load_model_data(self)
@@ -382,8 +402,8 @@ class BreastCancerDetectionApp:
         st.markdown("---")
         st.markdown("### 👨‍💻 Developer Information")
 
-        # Create two columns for developer information
-        col1, col2 = st.columns(2)
+        # Create four columns for developer information
+        col1, col2, col3, col4, col5 = st.columns(5)
 
         with col1:
             st.markdown("🧑🏻‍💻 Naveen S")
@@ -397,6 +417,23 @@ class BreastCancerDetectionApp:
             st.markdown("📧 Email: 22b01a4609@svecw.edu.in")
             st.markdown("Github: [Click here!](https://github.com/krishnasree76/)")
             st.markdown("Linkedin: [Click here!](https://www.linkedin.com/in/krishna-raja-sree-bonam-7b6079257/)")
+            
+        with col3:
+            st.markdown("🧑🏻‍💻 Joseph Boban")
+            st.markdown("📧 Email: joseph.dm254031@greatlakes.edu.in")
+            st.markdown("Github: [Click here!](https://github.com/josephboban2000)")
+            st.markdown("Linkedin: [Click here!](https://www.linkedin.com/in/josephboban/)")
+         
+        with col4:
+            st.markdown("🧑🏻‍💻 Shaik Ayesha Parveen")
+            st.markdown("📧 Email: ayeshparveen25@gmail.com")
+            st.markdown("Github: [Click here!](https://github.com/ShaikAyeshaparveen25/)")
+        with col5:
+            st.markdown("🧑🏻‍💻 Gayathri R")
+            st.markdown("📧 Email: gayathri.22ad@kct.ac.in")
+            st.markdown("Github: [Click here!](https://github.com/Gayathri-R-04/)")    
+                        
+                       
 
 def main():
     app = BreastCancerDetectionApp()
